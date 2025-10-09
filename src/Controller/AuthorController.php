@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Repository\AuthorRepository;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -9,23 +11,35 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AuthorController extends AbstractController
 {
     #[Route('/author', name: 'app_author')]
-    public function index(): Response{
+    public function index(): Response
+    {
         return $this->render('author/index.html.twig', [
             'controller_name' => 'AuthorController',
         ]);
     }
 
+    // #[Route('/list', name: 'listAuthors')] 
+    // public function listAuthors(): Response{
+    //     $var=""; $authors = array( 
+    //         array('id' => 1, 'picture' => '/images/Victor-Hugo.jpg','username' => 'Victor Hugo', 'email' => 'victor.hugo@gmail.com ', 'nb_books' => 100), 
+    //         array('id' => 2, 'picture' => '/images/william-shakespeare.jpg','username' => ' William Shakespeare', 'email' => ' william.shakespeare@gmail.com', 'nb_books' => 200 ),
+    //         array('id' => 3, 'picture' => '/images/Taha_Hussein.jpg','username' => 'Taha Hussein', 'email' => 'taha.hussein@gmail.com', 'nb_books' => 300), );
+    //     return $this->render('author/list.html.twig',array('x'=>$authors)); 
+    // }
+    
     #[Route('/list', name: 'listAuthors')]
-    public function listAuthors(): Response{
-        $var="";
-        $authors = array(
-            array('id' => 1, 'picture' => '/images/Victor-Hugo.jpg','username' => 'Victor Hugo', 'email' =>
-                'victor.hugo@gmail.com ', 'nb_books' => 100),
-            array('id' => 2, 'picture' => '/images/william-shakespeare.jpg','username' => ' William Shakespeare', 'email' =>
-                ' william.shakespeare@gmail.com', 'nb_books' => 200 ),
-            array('id' => 3, 'picture' => '/images/Taha_Hussein.jpg','username' => 'Taha Hussein', 'email' =>
-                'taha.hussein@gmail.com', 'nb_books' => 300),
-        );
-        return $this->render('author/list.html.twig',array('x'=>$authors));
+    public function listAuthors(AuthorRepository $Repository): Response{ 
+        $authors = $Repository->findAll(); 
+        // var_dump($authors).die(); 
+        return $this->render('author/list.html.twig',array('x'=>$authors)); 
     }
+
+
+
+    #[Route('/listAuthor/{ch}', name: 'showAuthors')]
+    public function show($ch, AuthorRepository $repository): Response{
+        $authors = $repository->findBy(['id' => $ch]);
+        return $this->render('author/list.html.twig', ['x' => $authors,]);
+    }
+
 }
